@@ -1,5 +1,7 @@
 # !/bin/bash
 
+PSQL="psql -X --username=freecodecamp --dbname=periodic_table --tuples-only -c"
+
 # Get passed variable
 PASSED_VARIABLE=$1
 
@@ -17,6 +19,7 @@ then
 
   # Query condition = atomic_number
   CONDITION="atomic_number"
+  ATOMIC_NUMBER=$PASSED_VARIABLE
 
 # If variable is a character (regex only works with the elements in this database
 elif [[ $PASSED_VARIABLE =~ ^[Aa-Zz]{1,2}$ ]] 
@@ -33,9 +36,15 @@ then
   CONDITION="name"
 fi
 
-echo $CONDITION
+# If atomic number not provided
+if [[ $CONDITION != "atomic_number" ]]
+then
 
-# Get atomic number, name, symbol, type, mass, melting point, and boiling point using query condition
+  # get atomic number using condition
+  ATOMIC_NUMBER=$($PSQL "SELECT atomic_number FROM elements WHERE $CONDITION = '$PASSED_VARIABLE'")
+fi
+echo $ATOMIC_NUMBER
+# Get name, symbol, type, mass, melting point, and boiling point using atomic number
 
 # If doesn't exist
 
