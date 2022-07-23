@@ -43,13 +43,19 @@ then
   # get atomic number using condition
   ATOMIC_NUMBER=$($PSQL "SELECT atomic_number FROM elements WHERE $CONDITION = '$PASSED_VARIABLE'")
 fi
-echo $ATOMIC_NUMBER
 # Get name, symbol, type, mass, melting point, and boiling point using atomic number
+ELEMENT_INFORMATION=$($PSQL "SELECT name, symbol, type, atomic_mass, melting_point_celsius, boiling_point_celsius FROM elements INNER JOIN properties USING(atomic_number) INNER JOIN types USING(type_id) WHERE atomic_number = $ATOMIC_NUMBER")
 
 # If doesn't exist
+if [[ -z $ELEMENT_INFORMATION ]] 
+then
 
   # Display not found message
+  echo I could not find that element in the database.
 
 # Else display element information
+else
+echo found it
+fi
 
 
