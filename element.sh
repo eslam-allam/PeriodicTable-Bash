@@ -45,17 +45,20 @@ then
 fi
 # Get name, symbol, type, mass, melting point, and boiling point using atomic number
 ELEMENT_INFORMATION=$($PSQL "SELECT name, symbol, type, atomic_mass, melting_point_celsius, boiling_point_celsius FROM elements INNER JOIN properties USING(atomic_number) INNER JOIN types USING(type_id) WHERE atomic_number = $ATOMIC_NUMBER")
-
 # If doesn't exist
 if [[ -z $ELEMENT_INFORMATION ]] 
 then
 
   # Display not found message
-  echo I could not find that element in the database.
+  echo "I could not find that element in the database."
 
-# Else display element information
+# If exists
 else
-echo found it
+  # Seperate into variables
+  IFS="|" read -r NAME SYMBOL TYPE MASS MELTING_POINT BOILING_POINT <<< $ELEMENT_INFORMATION
+  
+  # Display element information
+  echo "The element with atomic number $(echo $ATOMIC_NUMBER | sed -E 's/^ *| *$//g') is $(echo $NAME | sed -E 's/^ *| *$//g') ($(echo $SYMBOL | sed -E 's/^ *| *$//g')). It's a $(echo $TYPE | sed -E 's/^ *| *$//g'), with a mass of $(echo $MASS | sed -E 's/^ *| *$//g') amu. $(echo $NAME | sed -E 's/^ *| *$//g') has a melting point of $(echo $MELTING_POINT | sed -E 's/^ *| *$//g') celsius and a boiling point of $(echo $BOILING_POINT | sed -E 's/^ *| *$//g') celsius."
 fi
 
 
